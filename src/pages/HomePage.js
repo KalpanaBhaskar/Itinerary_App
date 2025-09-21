@@ -16,13 +16,29 @@ const HomePage = () => {
     const fetchItineraries = async () => {
       try {
         const response = await getItineraries();
-        const formattedItineraries = response.data.map(item => ({
-          id: item.id,
-          title: item.title,
-          dates: `${item.start_date} - ${item.end_date}`,
-          status: item.status,
-          dateRange: [new Date(item.start_date), new Date(item.end_date)]
-        }));
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const formattedItineraries = response.data.map(item => {
+          const startDate = new Date(item.start_date);
+          const endDate = new Date(item.end_date);
+          
+          let status = 'upcoming';
+          if (startDate <= today && endDate >= today) {
+            status = 'ongoing';
+          } else if (endDate < today) {
+            status = 'past';
+          }
+
+          return {
+            id: item.id,
+            title: item.title,
+            dates: `${item.start_date} - ${item.end_date}`,
+            status: status,
+            dateRange: [startDate, endDate],
+            itineraryData: item.itinerary_data
+          };
+        });
         setItineraries(formattedItineraries);
       } catch (err) {
         setError('Failed to fetch itineraries.');
@@ -39,16 +55,16 @@ const HomePage = () => {
   );
 
   const highlightedDates = itineraries.flatMap(trip => {
-    if (trip.dateRange) {
-      const dates = [];
-      let currentDate = new Date(trip.dateRange[0]);
-      while (currentDate <= trip.dateRange[1]) {
-        dates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
+      if (trip.dateRange && trip.dateRange[0] && trip.dateRange[1]) {
+          const dates = [];
+          let currentDate = new Date(trip.dateRange[0]);
+          while (currentDate <= trip.dateRange[1]) {
+              dates.push(new Date(currentDate));
+              currentDate.setDate(currentDate.getDate() + 1);
+          }
+          return dates;
       }
-      return dates;
-    }
-    return [];
+      return [];
   });
 
   if (loading) return <div className="loading-state">Loading...</div>;
@@ -60,7 +76,6 @@ const HomePage = () => {
         <h1 className="logo">Yatra Planner</h1>
         <nav className="main-nav">
           <Link to="/" className="nav-link">My Itineraries</Link>
-          {/* Login button removed as per your request */}
         </nav>
       </header>
 
@@ -78,6 +93,10 @@ const HomePage = () => {
       <section className="below-fold-content">
         <div className="itinerary-section-header">
           <h2>My Itineraries</h2>
+          <div className="itinerary-actions-header">
+            <Link to="/explore" className="explore-button">Explore Destinations</Link>
+            <Link to="/plan" className="plan-button">+ Plan New Trip</Link>
+          </div>
         </div>
         <div className="main-itinerary-content">
           <div className="calendar-card card">

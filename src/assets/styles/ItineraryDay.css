@@ -35,10 +35,15 @@
   font-size: 1rem;
 }
 
-.place-timing {
+.timing-dropdown {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
   font-weight: bold;
+  font-size: 0.9rem;
   color: #007bff;
-  min-width: 80px;
+  background-color: white;
+  min-width: 120px;
 }
 
 .place-name {

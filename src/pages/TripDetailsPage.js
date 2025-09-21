@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import './../assets/styles/TripDetailsPage.css';
 import { getItineraryById, updateItinerary, deleteItinerary } from '../services/api';
 
 const TripDetailsPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [trip, setTrip] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -33,9 +34,9 @@ const TripDetailsPage = () => {
   }, [id]);
 
   const handleEditChange = (dayIndex, placeIndex, field, value) => {
-    const updatedItinerary = [...editedTrip.itinerary];
-    updatedItinerary[dayIndex].places[placeIndex][field] = value;
-    setEditedTrip({ ...editedTrip, itinerary: updatedItinerary });
+    const updatedItinerary = { ...editedTrip };
+    updatedItinerary.itinerary[dayIndex].places[placeIndex][field] = value;
+    setEditedTrip(updatedItinerary);
   };
 
   const handleSave = async () => {
@@ -49,25 +50,40 @@ const TripDetailsPage = () => {
       });
       alert('Itinerary updated successfully!');
       setIsEditing(false);
-      setTrip(editedTrip); // Update local state with saved changes
+      setTrip(editedTrip);
     } catch (error) {
       alert('Failed to save changes.');
       console.error('Error saving changes:', error);
     }
   };
-
+  
   const handleAddPlace = (dayIndex) => {
-    const updatedItinerary = [...editedTrip.itinerary];
-    const newPlace = { id: Date.now(), name: '', timing: '' };
-    updatedItinerary[dayIndex].places.push(newPlace);
-    setEditedTrip({ ...editedTrip, itinerary: updatedItinerary });
+    const updatedItinerary = { ...editedTrip };
+    const newPlace = { id: Date.now(), name: '', timing: 'Morning' };
+    updatedItinerary.itinerary[dayIndex].places.push(newPlace);
+    setEditedTrip(updatedItinerary);
   };
 
   const handleRemovePlace = (dayIndex, placeIndex) => {
-    const updatedItinerary = [...editedTrip.itinerary];
-    updatedItinerary[dayIndex].places.splice(placeIndex, 1);
-    setEditedTrip({ ...editedTrip, itinerary: updatedItinerary });
+    const updatedItinerary = { ...editedTrip };
+    updatedItinerary.itinerary[dayIndex].places.splice(placeIndex, 1);
+    setEditedTrip(updatedItinerary);
   };
+
+  const handleDeleteTrip = async () => {
+      if(window.confirm('Are you sure you want to delete this trip?')) {
+          try {
+              await deleteItinerary(id);
+              alert('Trip deleted successfully!');
+              navigate('/');
+          } catch (error) {
+              alert('Failed to delete trip.');
+              console.error('Error deleting trip:', error);
+          }
+      }
+  }
+
+  const timings = ['Morning', 'Afternoon', 'Evening'];
 
   if (loading) return <div className="loading-state">Loading trip details...</div>;
   if (error) return <div className="error-state">{error}</div>;
@@ -90,6 +106,9 @@ const TripDetailsPage = () => {
               Save Changes
             </button>
           )}
+          <button onClick={handleDeleteTrip} className="delete-button">
+            Delete Trip
+          </button>
         </div>
       </header>
 
@@ -101,7 +120,7 @@ const TripDetailsPage = () => {
             </h3>
             <div className="places-list">
               {day.places.map((place, placeIndex) => (
-                <div key={place.id} className="place-item">
+                <div key={placeIndex} className="place-item">
                   <div className="place-details-row">
                     <div className="place-details-content">
                       {isEditing ? (
@@ -113,13 +132,13 @@ const TripDetailsPage = () => {
                             className="edit-input"
                             placeholder="Place Name"
                           />
-                          <input
-                            type="text"
+                          <select
                             value={place.timing}
                             onChange={(e) => handleEditChange(dayIndex, placeIndex, 'timing', e.target.value)}
-                            className="edit-input"
-                            placeholder="Timing (e.g., Morning)"
-                          />
+                            className="edit-select"
+                          >
+                            {timings.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
                         </>
                       ) : (
                         <>

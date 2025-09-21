@@ -64,10 +64,19 @@
 .place-safety.safety-medium { background-color: #ffc107; }
 .place-safety.safety-low { background-color: #dc3545; }
 
+/* New Crowd Level Styling */
 .place-crowd {
-  font-size: 0.85rem;
-  color: #6c757d;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: capitalize;
 }
+
+.place-crowd.crowd-high { background-color: #dc3545; }
+.place-crowd.crowd-medium { background-color: #ffc107; }
+.place-crowd.crowd-low { background-color: #28a745; }
 
 .place-actions {
   display: flex;
@@ -94,12 +103,8 @@
   background-color: #0056b3;
 }
 
-.remove-button {
-  background-color: transparent;
-  color: #6c757d;
-  border: 1px solid #ced4da;
-}
-
-.remove-button:hover {
-  background-color: #e9ecef;
+.add-button.added {
+  background-color: #28a745;
+  color: white;
+  pointer-events: none;
 }

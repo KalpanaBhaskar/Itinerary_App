@@ -26,7 +26,9 @@ const ItineraryCard = ({ itinerary }) => {
         <p className="trip-dates">{itinerary.dates}</p>
         <div className="card-buttons">
           <Link to={`/trip/${itinerary.id}`} className="card-button view">View Details</Link>
-          <Link to={`/edit/${itinerary.id}`} className="card-button edit">Edit Trip</Link>
+          {itinerary.status !== 'past' && (
+            <Link to={`/edit/${itinerary.id}`} className="card-button edit">Edit Trip</Link>
+          )}
         </div>
       </div>
     </div>

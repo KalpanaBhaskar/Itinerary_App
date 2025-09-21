@@ -1,7 +1,7 @@
 import React from 'react';
 import './../assets/styles/CuratedPlaceCard.css';
 
-const CuratedPlaceCard = ({ place }) => {
+const CuratedPlaceCard = ({ place, onAddPlace, onRemovePlace, isSelected }) => {
   const getSafetyClass = (safety) => {
     switch (safety) {
       case 'High':
@@ -12,6 +12,41 @@ const CuratedPlaceCard = ({ place }) => {
         return 'safety-low';
       default:
         return '';
+    }
+  };
+
+  const getSafetyText = (safety) => {
+    switch (safety) {
+      case 'High':
+        return 'Safe';
+      case 'Medium':
+        return 'Moderate Safety';
+      case 'Low':
+        return 'Unsafe';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const getCrowdClass = (crowd) => {
+    if (!crowd) return '';
+    switch (crowd.toLowerCase()) {
+      case 'high':
+        return 'crowd-high';
+      case 'medium':
+        return 'crowd-medium';
+      case 'low':
+        return 'crowd-low';
+      default:
+        return '';
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (isSelected) {
+      onRemovePlace(place.id);
+    } else {
+      onAddPlace(place);
     }
   };
 
@@ -26,14 +61,18 @@ const CuratedPlaceCard = ({ place }) => {
         <p className="place-description">{place.description}</p>
         <div className="info-row">
           <span className={`place-safety ${getSafetyClass(place.safety_level)}`}>
-            {place.safety_level === 'Low' && 'Unsafe'}
+            {getSafetyText(place.safety_level)}
           </span>
-          <span className="place-crowd">{place.crowd_level} crowd</span>
+          <span className={`place-crowd ${getCrowdClass(place.crowd_level)}`}>{place.crowd_level} crowd</span>
         </div>
       </div>
       <div className="place-actions">
-        <button className="add-button">Add to Itinerary</button>
-        <button className="remove-button">Remove</button>
+        <button
+          className={`add-button ${isSelected ? 'added' : ''}`}
+          onClick={handleButtonClick}
+        >
+          {isSelected ? 'Added' : 'Add to Itinerary'}
+        </button>
       </div>
     </div>
   );

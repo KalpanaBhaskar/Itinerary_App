@@ -29,7 +29,7 @@ export const createItinerary = async (itineraryData) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(itineraryData),
+    body: JSON.stringify({ ...itineraryData, itinerary_data: JSON.stringify(itineraryData.itinerary_data) }),
   });
   return handleResponse(response);
 };
@@ -40,14 +40,14 @@ export const updateItinerary = async (id, itineraryData) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(itineraryData),
+    body: JSON.stringify({ ...itineraryData, itinerary_data: JSON.stringify(itineraryData.itinerary_data) }),
   });
   return handleResponse(response);
 };
 
 export const deleteItinerary = async (id) => {
-    const response = await fetch(`${API_URL}/itineraries/${id}`, {
-      method: 'DELETE',
-    });
-    return handleResponse(response);
-  };
+  const response = await fetch(`${API_URL}/itineraries/${id}`, {
+    method: 'DELETE',
+  });
+  return handleResponse(response);
+};

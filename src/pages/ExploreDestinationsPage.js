@@ -39,6 +39,7 @@ const ExploreDestinationsPage = () => {
           id: item.id,
           title: item.title,
           status: item.status,
+          itinerary_data: item.itinerary_data,
         }));
         setItineraries(formattedItineraries);
 
@@ -76,7 +77,11 @@ const ExploreDestinationsPage = () => {
       <header className="explore-header">
         <Link to="/" className="back-button">← Back to Home</Link>
         <h1 className="explore-title">Explore Destinations</h1>
+        <div className="cta-button-container">
+          <Link to="/plan" className="plan-custom-button">+ Plan Custom Trip</Link>
+        </div>
       </header>
+
       <div className="search-and-filters">
         <div className="search-bar">
           <input

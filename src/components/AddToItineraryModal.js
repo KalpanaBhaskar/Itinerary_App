@@ -41,24 +41,21 @@ const AddToItineraryModal = ({ destination, onClose, existingItineraries }) => {
     }
 
     try {
-      // First, fetch the full itinerary data for the selected trip
       const response = await getItineraryById(selectedItineraryId);
       const existingTrip = response.data;
       
       const newPlace = { name: destination.name, timing: 'Morning' };
       const updatedItineraryData = { ...existingTrip };
       
-      // Add the new place to the last day of the existing itinerary
-      const lastDay = updatedItineraryData.itinerary_data[updatedItineraryData.itinerary_data.length - 1];
-      if (lastDay) {
-        lastDay.places.push(newPlace);
-      } else {
-        // If the itinerary is empty, create the first day
-        updatedItineraryData.itinerary_data.push({
+      if (!updatedItineraryData.itinerary_data || updatedItineraryData.itinerary_data.length === 0) {
+        updatedItineraryData.itinerary_data = [{
           day: 1,
           date: new Date().toDateString(),
           places: [newPlace]
-        });
+        }];
+      } else {
+        const lastDay = updatedItineraryData.itinerary_data[updatedItineraryData.itinerary_data.length - 1];
+        lastDay.places.push(newPlace);
       }
 
       await updateItinerary(selectedItineraryId, updatedItineraryData);
